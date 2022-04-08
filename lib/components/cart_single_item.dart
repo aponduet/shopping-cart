@@ -3,19 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/product_model.dart';
 
-class SingleProduct extends StatelessWidget {
-  final int? id;
+class SingleCartitem extends StatelessWidget {
+  final String? id;
+  final int? quantity;
   final String? name;
-  final String? delails;
-  final int? price;
+  final String? details;
+  final int price;
   final String? imageUrl;
-  const SingleProduct(
+  const SingleCartitem(
       {Key? key,
       required this.id,
       required this.name,
-      required this.delails,
+      required this.details,
       required this.price,
-      required this.imageUrl})
+      required this.imageUrl,
+      required this.quantity})
       : super(key: key);
 
   @override
@@ -25,7 +27,7 @@ class SingleProduct extends StatelessWidget {
           border: Border.all(color: Colors.grey),
           borderRadius: const BorderRadius.all(Radius.circular(8))),
       width: 200,
-      height: 300,
+      height: 350,
       child: Column(
         //mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -48,7 +50,7 @@ class SingleProduct extends StatelessWidget {
                   style: const TextStyle(
                       fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-                Text("$delails",
+                Text("$details",
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 14,
@@ -60,22 +62,41 @@ class SingleProduct extends StatelessWidget {
                         color: Colors.green,
                         fontWeight: FontWeight.w900)),
                 const SizedBox(
-                  height: 30,
+                  height: 10,
+                ),
+                Container(
+                  padding: const EdgeInsets.all(5),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      IconButton(
+                          onPressed: () {
+                            context.read<Cart>().addItem(
+                                productId: "$id",
+                                price: price.toDouble(),
+                                title: "$name",
+                                subTitle: "$details",
+                                imageUrl: "$imageUrl");
+                          },
+                          icon: const Icon(Icons.add_outlined)),
+                      Text("$quantity"),
+                      IconButton(
+                          onPressed: () {
+                            context.read<Cart>().removeSingleItem("$id");
+                          },
+                          icon: const Icon(Icons.remove_outlined)),
+                    ],
+                  ),
                 ),
                 ElevatedButton(
                     onPressed: () {
-                      // var cartIcon = context.read<DataStore>();
-                      // cartIcon.add();
-                      // codes for shopping cart
-                      var cartBox = context.read<Cart>();
-                      cartBox.addItem(
-                          productId: "$id",
-                          price: price!.toDouble(),
-                          title: "$name",
-                          subTitle: "$delails",
-                          imageUrl: '$imageUrl');
+                      var removeItem = context.read<Cart>();
+                      removeItem.removeItem("$id");
                     },
-                    child: const Text("Add to Cart")),
+                    child: const Text("Delete")),
+
+                // Test of Consuming
               ],
             ),
           )
