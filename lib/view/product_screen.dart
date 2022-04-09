@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../components/single_product.dart';
 import '../models/product_model.dart';
 import 'cart_screen.dart';
+import 'hive_cart_screen.dart';
 
 // Hard Coded Data
 
@@ -92,6 +93,14 @@ class ProductsScreen extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                             builder: ((context) => const CartScreen())));
+                  },
+                  icon: const Icon(Icons.shopping_bag_outlined)),
+              IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: ((context) => const HiveCartScreen())));
                   },
                   icon: const Icon(Icons.shopping_bag_outlined)),
             ],

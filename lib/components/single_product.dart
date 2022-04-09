@@ -1,9 +1,10 @@
 import 'package:cartapp/models/cart_model.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import '../models/product_model.dart';
 
-class SingleProduct extends StatelessWidget {
+class SingleProduct extends StatefulWidget {
   final int? id;
   final String? name;
   final String? delails;
@@ -19,6 +20,20 @@ class SingleProduct extends StatelessWidget {
       : super(key: key);
 
   @override
+  State<SingleProduct> createState() => _SingleProductState();
+}
+
+class _SingleProductState extends State<SingleProduct> {
+  late final Box box;
+
+  @override
+  void initState() {
+    super.initState();
+    // Connect to Local Storage
+    box = Hive.box('cartBox');
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
@@ -31,7 +46,7 @@ class SingleProduct extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Image(
-            image: AssetImage("../../images/products/$imageUrl"),
+            image: AssetImage("../../images/products/${widget.imageUrl}"),
             width: 200,
             height: 180,
             fit: BoxFit.cover,
@@ -44,36 +59,68 @@ class SingleProduct extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  "$name",
+                  "${widget.name}",
                   style: const TextStyle(
                       fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-                Text("$delails",
+                Text("${widget.delails}",
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 14,
                       color: Colors.grey,
                     )),
-                Text("Price: $price Tk/Kg",
+                Text("Price: ${widget.price} Tk/Kg",
                     style: const TextStyle(
                         fontSize: 16,
                         color: Colors.green,
                         fontWeight: FontWeight.w900)),
                 const SizedBox(
-                  height: 30,
+                  height: 5,
                 ),
                 ElevatedButton(
-                    onPressed: () {
-                      // var cartIcon = context.read<DataStore>();
-                      // cartIcon.add();
+                    onPressed: () {}, child: const Text("View Item")),
+                const SizedBox(
+                  height: 5,
+                ),
+                ElevatedButton(
+                    onPressed: () async {
+                      var productId = widget.id.toString();
+                      //Codes for Hive Store
+
+                      if (box.containsKey(productId)) {
+                        var existingCartItem = box.get(productId);
+                        //change quantity
+                        CartItem updateData = CartItem(
+                            id: existingCartItem.id,
+                            title: existingCartItem.title,
+                            subTitle: existingCartItem.subTitle,
+                            quantity: existingCartItem.quantity + 1,
+                            price: existingCartItem.price,
+                            imageUrl: existingCartItem.imageUrl);
+
+                        box.put(productId, updateData);
+                        print('Hello!! Info updated in box!');
+                      } else {
+                        CartItem boxData = CartItem(
+                            id: widget.id.toString(),
+                            title: "${widget.name}",
+                            subTitle: "${widget.delails}",
+                            quantity: 1,
+                            price: widget.price!.toDouble(),
+                            imageUrl: '${widget.imageUrl}');
+
+                        box.put(productId, boxData);
+                        print('Hello!! Product added in box!');
+                      }
+
                       // codes for shopping cart
                       var cartBox = context.read<Cart>();
                       cartBox.addItem(
-                          productId: "$id",
-                          price: price!.toDouble(),
-                          title: "$name",
-                          subTitle: "$delails",
-                          imageUrl: '$imageUrl');
+                          productId: "${widget.id}",
+                          price: widget.price!.toDouble(),
+                          title: "${widget.name}",
+                          subTitle: "${widget.delails}",
+                          imageUrl: '${widget.imageUrl}');
                     },
                     child: const Text("Add to Cart")),
               ],
