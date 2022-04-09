@@ -1,11 +1,20 @@
 import 'package:flutter/foundation.dart';
+import 'package:hive/hive.dart';
+part 'cart_model.g.dart';
 
+@HiveType(typeId: 1)
 class CartItem {
+  @HiveField(0)
   final String id;
+  @HiveField(1)
   final String title;
+  @HiveField(2)
   final String subTitle;
+  @HiveField(3)
   final int quantity;
+  @HiveField(4)
   final double price;
+  @HiveField(5)
   final String imageUrl;
 
   CartItem({
@@ -19,6 +28,10 @@ class CartItem {
 }
 
 class Cart with ChangeNotifier {
+  //Implementation of Hibe Store for Shopping Cart :)
+  //Hive Store Code Start
+
+  //Hive Store Code End
   Map<String, CartItem> _items = {};
 
   Map<String, CartItem> get items {
